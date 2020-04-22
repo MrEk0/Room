@@ -18,7 +18,7 @@ public class InteractiveObject : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Player");
+        onClickPanel.SetActive(true);
     }
 
     private void OnMouseOver()

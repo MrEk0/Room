@@ -5,6 +5,7 @@ using TMPro;
 
 public class DialoguePanel : MonoBehaviour
 {
+    [SerializeField] TextMeshProUGUI playerName;
     [SerializeField] TextMeshProUGUI playerText;
     [SerializeField] TextMeshProUGUI friendText;
     [SerializeField] Dialogue dialogue;
@@ -19,7 +20,17 @@ public class DialoguePanel : MonoBehaviour
 
     private void Awake()
     {
+        PlayerName();
         animator = GetComponent<Animator>();
+    }
+
+    private void PlayerName()
+    {
+        Data playerdata = DataSaver.Load();
+        if (playerdata != null)
+        {
+            playerName.text = playerdata.name;
+        }
     }
 
     public void StartDialogue()

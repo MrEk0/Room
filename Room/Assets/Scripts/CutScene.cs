@@ -5,6 +5,7 @@ using UnityEngine;
 public class CutScene : MonoBehaviour
 {
     [SerializeField] Player player;
+    [SerializeField] GameObject phone;
     [SerializeField] float timeToStart = 0.5f;
 
     private Animator animator;
@@ -18,6 +19,7 @@ public class CutScene : MonoBehaviour
     {
         yield return new WaitForSeconds(timeToStart);
         animator.SetTrigger("Start");
+        phone.SetActive(true);
     }
 
     public void PlayFinishAnimation()

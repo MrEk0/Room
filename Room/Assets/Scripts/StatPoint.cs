@@ -6,20 +6,16 @@ using TMPro;
 
 public class StatPoint : MonoBehaviour
 {
-    //[SerializeField] float startPoints = 10f;
     [SerializeField] GameObject pointsText;
     [SerializeField] TextMeshProUGUI statPointText;
 
-    //private float statLevel = 0f;
     private float currentScore = 0f;
-    private float availablePoints;
     Points points;
 
     private void Awake()
     {
         statPointText.text = currentScore.ToString();
         points = pointsText.GetComponent<Points>();
-        availablePoints = points.GetCurrentPoint();
     }
 
     public void DecreaseStat()
@@ -32,7 +28,7 @@ public class StatPoint : MonoBehaviour
 
     public void IncreaseStat()
     {
-        if (points.GetCurrentPoint() == 0f)
+        if (points.GetCurrentPoint() == 0f || points.GetCurrentPoint()<currentScore)
             return;
 
         currentScore++;
