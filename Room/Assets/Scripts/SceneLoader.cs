@@ -52,6 +52,11 @@ public class SceneLoader : MonoBehaviour
         StartCoroutine(FadeOut(sceneIndex));
     }
 
+    public void LoadThisScene()
+    {
+        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+    }
+
     private IEnumerator FadeOut(int sceneIndex)
     {
         float t = 0f;

@@ -20,18 +20,23 @@ public class DialoguePanel : MonoBehaviour
 
     private void Awake()
     {
-        PlayerName();
-        animator = GetComponent<Animator>();
+        //PlayerName();
+        animator = GetComponent<Animator>();     
     }
 
-    private void PlayerName()
+    private void Start()
     {
-        Data playerdata = DataSaver.Load();
-        if (playerdata != null)
-        {
-            playerName.text = playerdata.name;
-        }
+        playerText.text = GameManager.Instance.GetPlayerName();
     }
+
+    //private void PlayerName()
+    //{
+    //    Data playerdata = DataSaver.Load();
+    //    if (playerdata != null)
+    //    {
+    //        playerName.text = playerdata.name;
+    //    }
+    //}
 
     public void StartDialogue()
     {

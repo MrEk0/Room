@@ -14,13 +14,13 @@ public static class DataSaver
         string path = GetFilePath();
 
         FileStream stream = new FileStream(path, FileMode.Create);
-        Data data = new Data(name, stat1, stat2, stat3);
+        GameData data = new GameData(name, stat1, stat2, stat3);
 
         binaryFormatter.Serialize(stream, data);
         stream.Close();
     }
 
-    public static Data Load()
+    public static GameData Load()
     {
         string path = GetFilePath();
 
@@ -29,7 +29,9 @@ public static class DataSaver
             BinaryFormatter binaryFormatter = new BinaryFormatter();
             FileStream stream = new FileStream(path, FileMode.Open);
 
-            Data data = binaryFormatter.Deserialize(stream) as Data;
+            GameData data = binaryFormatter.Deserialize(stream) as GameData;
+            stream.Close();
+
             return data;
         }
         else

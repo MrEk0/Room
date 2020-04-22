@@ -10,10 +10,20 @@ public class InteractiveObject : MonoBehaviour
 
     SpriteRenderer spriteRenderer;
     Sprite standardSprite;
+    private bool isTrigger;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         standardSprite = spriteRenderer.sprite;
+        Collider2D[] colliders = GetComponents<Collider2D>();
+        for(int i=0; i<colliders.Length; i++)
+        {
+            if(colliders[i].isTrigger)
+            {
+                isTrigger = true;
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -33,7 +43,10 @@ public class InteractiveObject : MonoBehaviour
 
     private void OnMouseDown()
     {
-        //onClickPanel.SetActive(true);
+        if (!isTrigger)
+        {
+            onClickPanel.SetActive(true);
+        }
     }
 
 
