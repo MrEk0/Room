@@ -157,7 +157,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31ec25baca8aab04b98ffbe15d4c53a8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -523,7 +523,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31ec25baca8aab04b98ffbe15d4c53a8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -563,7 +563,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 68596361}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.36, z: 0}
+  m_LocalPosition: {x: 0, y: 0.54, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1021352101}
@@ -636,7 +636,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u0412\u0440\u0435\u043C\u044F: 14:00"
+  m_text: "\u0412\u0440\u0435\u043C\u044F: 15:00"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f5250a2d6022b354db77849ea86fcd2d, type: 2}
   m_sharedMaterial: {fileID: -7335045702355532796, guid: f5250a2d6022b354db77849ea86fcd2d,
@@ -1993,7 +1993,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31ec25baca8aab04b98ffbe15d4c53a8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2374,7 +2374,7 @@ PrefabInstance:
     - target: {fileID: 6229185396841014273, guid: aa44d1b19b6a9c94497e6648a4c440e8,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa44d1b19b6a9c94497e6648a4c440e8, type: 3}
@@ -3003,7 +3003,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31ec25baca8aab04b98ffbe15d4c53a8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3059,7 +3059,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightSprite: {fileID: 21300000, guid: 31294f4d219a60b4b95e62d7ae027c82, type: 3}
-  onClickPanel: {fileID: 328675962}
 --- !u!61 &638556555
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3586,7 +3585,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &712117631
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4177,7 +4176,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31ec25baca8aab04b98ffbe15d4c53a8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4376,9 +4375,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b56c92b1bd41aa42a3ad7059fc6067d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stressSlider: {fileID: 1048831872}
+  timeText: {fileID: 74611611}
+  dayCounterText: {fileID: 505808729}
   stat1Text: {fileID: 2027038463}
   stat2Text: {fileID: 1347044683}
   stat3Text: {fileID: 573844300}
+  GreetingPanel: {fileID: 793540885}
 --- !u!1 &855613755
 GameObject:
   m_ObjectHideFlags: 0
@@ -4639,7 +4642,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31ec25baca8aab04b98ffbe15d4c53a8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4989,7 +4992,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1021352099}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.96, y: -1.71, z: -0.99902344}
+  m_LocalPosition: {x: -2.72, y: -1.9, z: -0.99902344}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 68596363}
@@ -6538,6 +6541,7 @@ GameObject:
   - component: {fileID: 1450391930}
   - component: {fileID: 1450391931}
   - component: {fileID: 1450391932}
+  - component: {fileID: 1450391933}
   m_Layer: 0
   m_Name: Bed
   m_TagString: Untagged
@@ -6563,7 +6567,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31ec25baca8aab04b98ffbe15d4c53a8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6633,7 +6637,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightSprite: {fileID: 21300000, guid: 986044b7f130d9b4bab3c1ba561fa5b2, type: 3}
-  onClickPanel: {fileID: 0}
 --- !u!60 &1450391932
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -6664,6 +6667,20 @@ PolygonCollider2D:
       - {x: 0.5627842, y: -1.349059}
       - {x: 1.8221681, y: -0.33118963}
       - {x: -0.9460454, y: 1.2261647}
+--- !u!114 &1450391933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450391927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4138ba4ff407c5d43b6c1974b0b317b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneLoader: {fileID: 1055393927}
+  stressForBed: 1
 --- !u!1 &1462657421
 GameObject:
   m_ObjectHideFlags: 0
@@ -6820,49 +6837,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1462657421}
   m_CullTransparentMesh: 0
---- !u!1 &1486724280
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1486724282}
-  - component: {fileID: 1486724281}
-  m_Layer: 0
-  m_Name: GameManger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1486724281
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1486724280}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8b4299568dc83439b2bb5807357411, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1486724282
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1486724280}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 379.13672, y: 206.24507, z: -14.915228}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1601227281
 GameObject:
   m_ObjectHideFlags: 0
@@ -7275,7 +7249,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!210 &1647068634
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -7803,7 +7777,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 081e885d2a2bc4f42b6be557cdc4e756, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stressSlider: {fileID: 1048831872}
   TVPanel: {fileID: 2089234820}
   toggle1: {fileID: 740593167}
   stressFor1Game: 2
@@ -8310,7 +8283,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 31ec25baca8aab04b98ffbe15d4c53a8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8380,7 +8353,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightSprite: {fileID: 21300000, guid: d40c1170877e23d4db7899bb5a66b0f2, type: 3}
-  onClickPanel: {fileID: 1736597456}
 --- !u!61 &1972415621
 BoxCollider2D:
   m_ObjectHideFlags: 0

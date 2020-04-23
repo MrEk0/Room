@@ -2,21 +2,44 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class HUD : MonoBehaviour
 {
-    //[SerializeField] 
+    public static HUD Instance { get; private set; }
+
+    [SerializeField] Slider stressSlider;
+    [SerializeField] TextMeshProUGUI timeText;
+    [SerializeField] TextMeshProUGUI dayCounterText;
     [SerializeField] TextMeshProUGUI stat1Text;
     [SerializeField] TextMeshProUGUI stat2Text;
     [SerializeField] TextMeshProUGUI stat3Text;
+    [SerializeField] GameObject GreetingPanel;
 
-    //private string stat1 = "Стат 1: ";
-    //private string stat2 = "Стат 2: ";
-    //private string stat3 = "Стат 3: ";
+    float sliderValue;
+    float dayCounter=0f;
+    float dayTime = 20f;
 
     private void Awake()
     {
+        Instance = this;
+
+        //sliderValue = stressSlider.value;
+
+        sliderValue = GameManager.instance.GetStressValue();
+        dayCounter= GameManager.instance.GetDayNumber();
+        dayTime = GameManager.instance.GetDayTime();
+        stressSlider.value = sliderValue;
         LoadPlayerStat();
+        UpdateText();
+        //UpdateDay();
+    }
+
+    private void UpdateText()
+    {
+        //stressSlider.value = sliderValue;
+        dayCounterText.text = "День: " + dayCounter;
+        timeText.text = "Время: " + dayTime + ":00";
     }
 
     private void LoadPlayerStat()
@@ -30,8 +53,26 @@ public class HUD : MonoBehaviour
         }
     }
 
-    //public void UpdateStat()
-    //{
-    //    stat1Text.text
-    //}
+    public void UpdateDay()
+    {
+        //sliderValue++;
+        dayCounter++;
+        dayTime = 14f;
+
+        UpdateText();
+        GameManager.instance.SaveDayData(dayCounter, dayTime);
+    }
+
+    public void UpdateSliderValue(float value)
+    {
+        sliderValue = Mathf.Max(0, sliderValue += value);
+        stressSlider.value = sliderValue;
+
+        GameManager.instance.SaveStress(sliderValue);
+    }
+
+    public void ShowGreetingPanel()
+    {
+        GreetingPanel.SetActive(true);
+    }
 }

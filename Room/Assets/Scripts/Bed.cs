@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class Bed : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] SceneLoader sceneLoader;
+    //[SerializeField] float stressForBed = 1f;
+    private void OnMouseDown()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        sceneLoader.UpdateDay();
+        //HUD.Instance.UpdateSliderValue(stressForBed);
+        HUD.Instance.UpdateDay();
     }
 }

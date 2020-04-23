@@ -26,7 +26,7 @@ public class DialoguePanel : MonoBehaviour
 
     private void Start()
     {
-        playerText.text = GameManager.Instance.GetPlayerName();
+        playerName.text = GameManager.instance.GetPlayerName();
     }
 
     //private void PlayerName()

@@ -6,7 +6,7 @@ using UnityEngine;
 public class InteractiveObject : MonoBehaviour
 {
     [SerializeField] Sprite lightSprite;
-    [SerializeField] GameObject onClickPanel;
+    //[SerializeField] GameObject onClickPanel;
 
     SpriteRenderer spriteRenderer;
     Sprite standardSprite;
@@ -26,10 +26,10 @@ public class InteractiveObject : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        onClickPanel.SetActive(true);
-    }
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    onClickPanel.SetActive(true);
+    //}
 
     private void OnMouseOver()
     {
@@ -41,13 +41,13 @@ public class InteractiveObject : MonoBehaviour
         spriteRenderer.sprite = standardSprite;
     }
 
-    private void OnMouseDown()
-    {
-        if (!isTrigger)
-        {
-            onClickPanel.SetActive(true);
-        }
-    }
+    //private void OnMouseDown()
+    //{
+    //    if (!isTrigger)
+    //    {
+    //        onClickPanel.SetActive(true);
+    //    }
+    //}
 
 
 

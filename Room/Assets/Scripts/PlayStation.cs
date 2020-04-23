@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class PlayStation : MonoBehaviour
 {
-    [SerializeField] Slider stressSlider;
+    //[SerializeField] Slider stressSlider;
     [SerializeField] GameObject TVPanel;
     [SerializeField] Toggle toggle1;
     [SerializeField] float stressFor1Game = 2f;
@@ -15,17 +15,19 @@ public class PlayStation : MonoBehaviour
     {
         TVPanel.SetActive(true);
 
-        float sliderValue = stressSlider.value;
+        //float sliderValue = stressSlider.value;
 
         if(toggle1.isOn)
         {
-            sliderValue = Mathf.Max(0, sliderValue -= stressFor1Game);
-            stressSlider.value = sliderValue;
+            HUD.Instance.UpdateSliderValue(-stressFor1Game);
+            //sliderValue = Mathf.Max(0, sliderValue -= stressFor1Game);
+            //stressSlider.value = sliderValue;
         }
         else
         {
-            sliderValue = Mathf.Max(0, sliderValue -= stressFor2Games);
-            stressSlider.value = sliderValue;
+            HUD.Instance.UpdateSliderValue(-stressFor2Games);
+            //sliderValue = Mathf.Max(0, sliderValue -= stressFor2Games);
+            //stressSlider.value = sliderValue;
         }
     }
 }

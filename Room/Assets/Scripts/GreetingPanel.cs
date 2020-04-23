@@ -9,7 +9,7 @@ public class GreetingPanel : MonoBehaviour
 
     private void Start()
     {
-        string playerName = GameManager.Instance.GetPlayerName();
+        string playerName = GameManager.instance.GetPlayerName();
 
         greetingText.text = playerName + " прибыл из школы";
     }

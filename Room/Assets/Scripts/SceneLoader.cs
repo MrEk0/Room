@@ -7,7 +7,8 @@ using UnityEngine.SceneManagement;
 public enum SceneName
 {
     StartScene,
-    Home,
+    DarkRoom,
+    LightRoom,
     Street,
     Garage
 }
@@ -15,7 +16,6 @@ public enum SceneName
 public class SceneLoader : MonoBehaviour
 {
     [SerializeField] float fadeTime;
-    //[SerializeField] Color fadeOutColor;
 
     Image panelImage;
     float alpha=1f;
@@ -41,21 +41,37 @@ public class SceneLoader : MonoBehaviour
         int sceneIndex=0;
         switch (scene)
         {
-            case SceneName.Home:
-                sceneIndex = (int)SceneName.Home;
+            case SceneName.DarkRoom:
+                sceneIndex = (int)SceneName.DarkRoom;
+                break;
+            case SceneName.LightRoom:
+                sceneIndex = (int)SceneName.LightRoom;
                 break;
             case SceneName.Street:
                 sceneIndex = (int)SceneName.Street;
+                break;
+            case SceneName.Garage:
+                sceneIndex = (int)SceneName.Garage;
                 break;
 
         }
         StartCoroutine(FadeOut(sceneIndex));
     }
 
-    public void LoadThisScene()
+    public void UpdateDay()
     {
-        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneName sceneName = GameManager.instance.CurrentScene;
+
+        int sceneIndex = sceneName == SceneName.DarkRoom ? (int)SceneName.LightRoom : (int)SceneName.DarkRoom;
+        StartCoroutine(FadeOut(sceneIndex));
+        //StartCoroutine(WaitToUpdate());
     }
+
+    //private IEnumerator WaitToUpdate()
+    //{
+    //    yield return new WaitForSeconds(fadeTime);
+    //    HUD.Instance.UpdateDay();
+    //}
 
     private IEnumerator FadeOut(int sceneIndex)
     {
@@ -69,6 +85,7 @@ public class SceneLoader : MonoBehaviour
             yield return null;
         }
         SceneManager.LoadScene(sceneIndex);
+        GameManager.instance.UpdateCurrentScene(sceneIndex);
     }
 
     private IEnumerator FadeIn()
@@ -81,6 +98,12 @@ public class SceneLoader : MonoBehaviour
             alpha = Mathf.Lerp(0, 1, t/fadeTime);
             panelImage.color = new Color(0f, 0f, 0f, alpha);
             yield return null;
+        }
+
+        SceneName name = GameManager.instance.CurrentScene;
+        if (name == SceneName.LightRoom)
+        {
+            HUD.Instance.ShowGreetingPanel();
         }
     }
 }
