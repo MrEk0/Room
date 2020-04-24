@@ -409,6 +409,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogue: {fileID: 11400000, guid: 6c0aff574e8864f4ba59f96a681a1eae, type: 2}
+  blockClickPanel: {fileID: 0}
   leftNameText: {fileID: 6159688688264304524}
   leftPersonText: {fileID: 6159688687738884566}
   rightNameText: {fileID: 6159688686365185584}

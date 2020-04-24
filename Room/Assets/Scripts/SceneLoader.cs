@@ -32,12 +32,14 @@ public class SceneLoader : MonoBehaviour
 
     public void LoadNextScene()
     {
+        AudioManager.instance.PlayClickAudio();
         int sceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
         StartCoroutine(FadeOut(sceneIndex));
     }
 
     public void LoadChoosenScene(SceneName scene)
     {
+        AudioManager.instance.PlayClickAudio();
         int sceneIndex=0;
         switch (scene)
         {

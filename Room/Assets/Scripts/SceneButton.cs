@@ -9,6 +9,7 @@ public class SceneButton : MonoBehaviour
 
     public void LoadScene()
     {
+        AudioManager.instance.PlayDoorAudio();
         sceneLoader.LoadChoosenScene(sceneTypeToGo);
     }
 }

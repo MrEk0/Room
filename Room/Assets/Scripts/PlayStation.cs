@@ -10,12 +10,12 @@ public class PlayStation : MonoBehaviour
     [SerializeField] float hoursFor1Game = 1f;
     [SerializeField] float stressFor1Game = 2f;
     [SerializeField] float hoursFor2Games = 2f;
-    [SerializeField] float stressFor2Games = 4f;
+    [SerializeField] float stressFor2Games = 4f;//improve?
 
     public void PlayButton()
     {
         TVPanel.SetActive(true);
-
+        AudioManager.instance.PlayClickAudio();
 
         if(toggle1.isOn)
         {

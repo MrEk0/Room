@@ -299,7 +299,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8f40b86c5999cd4a9e2caddfbb62d7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneTypeToGo: 3
+  sceneTypeToGo: 4
   sceneLoader: {fileID: 0}
 --- !u!1 &7057255627026521834
 GameObject:
@@ -744,7 +744,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8f40b86c5999cd4a9e2caddfbb62d7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneTypeToGo: 2
+  sceneTypeToGo: 3
   sceneLoader: {fileID: 0}
 --- !u!1 &7057255627994985171
 GameObject:
@@ -979,6 +979,7 @@ GameObject:
   - component: {fileID: 7057255628399919065}
   - component: {fileID: 7057255628399919066}
   - component: {fileID: 7057255628399919067}
+  - component: {fileID: 4048670880699061369}
   m_Layer: 5
   m_Name: CancelButton
   m_TagString: Untagged
@@ -1096,6 +1097,29 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 4048670880699061369}
+        m_MethodName: PlayButtonAudio
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &4048670880699061369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7057255628399919069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6991381409edec949a993c615ff5e7ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7057255628430850436
 GameObject:
   m_ObjectHideFlags: 0

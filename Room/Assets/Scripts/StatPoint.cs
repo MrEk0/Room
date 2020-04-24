@@ -20,6 +20,7 @@ public class StatPoint : MonoBehaviour
 
     public void DecreaseStat()
     {
+        AudioManager.instance.PlayClickAudio();
         points.ChangeAvailablePoints(currentScore);
         currentScore--;
         currentScore = Mathf.Max(0, currentScore);
@@ -28,6 +29,7 @@ public class StatPoint : MonoBehaviour
 
     public void IncreaseStat()
     {
+        AudioManager.instance.PlayClickAudio();
         if (points.GetCurrentPoint() == 0f || points.GetCurrentPoint()<currentScore)
             return;
 

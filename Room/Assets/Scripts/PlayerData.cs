@@ -26,6 +26,7 @@ public class PlayerData : MonoBehaviour
 
     public void ConfirmPlayerName()
     {
+        AudioManager.instance.PlayClickAudio();
         name = inputNameText.text;
         nameText.text = name;
     }

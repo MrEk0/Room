@@ -6,6 +6,7 @@ public class CutScene : MonoBehaviour
 {
     [SerializeField] Player player;
     [SerializeField] GameObject phone;
+    [SerializeField] GameObject blockClickPanel;
     [SerializeField] float timeToStart = 0.5f;
 
     private Animator animator;
@@ -17,9 +18,12 @@ public class CutScene : MonoBehaviour
 
     private IEnumerator Start()
     {
+        //GameManager.instance.PauseGame();
+        blockClickPanel.SetActive(true);
         yield return new WaitForSeconds(timeToStart);
         animator.SetTrigger("Start");
         phone.SetActive(true);
+        //AudioManager.instance.PlayPhoneAudio();
     }
 
     public void PlayFinishAnimation()
@@ -29,6 +33,8 @@ public class CutScene : MonoBehaviour
 
     public void StopAnimation()
     {
+        //GameManager.instance.ResumeGame();
+        blockClickPanel.SetActive(true);
         gameObject.SetActive(false);
     }
 

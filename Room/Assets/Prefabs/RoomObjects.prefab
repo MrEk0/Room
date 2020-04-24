@@ -269,6 +269,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialougePanel: {fileID: 0}
   cutScenePanel: {fileID: 0}
+  phoneClip: {fileID: 8300000, guid: 4e6c945eaa49bb649a4455fea7724549, type: 3}
 --- !u!1 &3043823192444842600
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,7 +284,7 @@ GameObject:
   - component: {fileID: 3043823192444842596}
   - component: {fileID: 3043823192444842594}
   - component: {fileID: 3043823192444842597}
-  - component: {fileID: 5072222169639702981}
+  - component: {fileID: 4791200993424187535}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -421,7 +422,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.0271201, y: 1.2835547}
   m_EdgeRadius: 0
---- !u!114 &5072222169639702981
+--- !u!114 &4791200993424187535
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -430,10 +431,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 3043823192444842600}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be22ebb30122a6446adbf69cdd4a5b8d, type: 3}
+  m_Script: {fileID: 11500000, guid: 3429608a9908fd0448915a25e4ca61cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelToShow: {fileID: 0}
+  doorPanel: {fileID: 0}
+  doorClip: {fileID: 8300000, guid: 272a880c59a70024ab8ba8c7a39e8c73, type: 3}
 --- !u!1 &3043823192868097004
 GameObject:
   m_ObjectHideFlags: 0

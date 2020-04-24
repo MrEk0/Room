@@ -7,6 +7,7 @@ using TMPro;
 public class DialoguePanel : MonoBehaviour
 {
     [SerializeField] Dialogue dialogue;
+    [SerializeField] GameObject blockClickPanel;
     [SerializeField] TextMeshProUGUI leftNameText;
     [SerializeField] TextMeshProUGUI leftPersonText;
     [SerializeField] TextMeshProUGUI rightNameText;
@@ -27,7 +28,9 @@ public class DialoguePanel : MonoBehaviour
         animator = GetComponent<Animator>();
 
         SetUpDialogue();
+        blockClickPanel.SetActive(true);
     }
+
 
     private void SetUpDialogue()
     {
@@ -62,10 +65,10 @@ public class DialoguePanel : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        GameManager.instance.PauseGame();
-    }
+    //private void Start()
+    //{
+    //    GameManager.instance.PauseGame();
+    //}
 
     public void StartDialogue()
     {
@@ -88,13 +91,17 @@ public class DialoguePanel : MonoBehaviour
             yield return new WaitForSeconds(waitTime);
         }
 
+        AudioManager.instance.StopAudioClip(ClipType.Text);
         isDialogueFinished = true;
         CloseWindow();
+        //GameManager.instance.ResumeGame();
     }
 
     private void CloseWindow()
     {
         animator.SetTrigger("DialogueFinished");
+        blockClickPanel.SetActive(false);
+        //GameManager.instance.ResumeGame();
     }
 
     private float CalculateWaitTime(string sentence)
@@ -112,6 +119,7 @@ public class DialoguePanel : MonoBehaviour
     IEnumerator TypeSentence(string sentence, TextMeshProUGUI dialogueText)
     {
         dialogueText.text = "";
+        AudioManager.instance.PlayTextAudio();
 
         foreach (char letter in sentence.ToCharArray())
         {
@@ -127,6 +135,7 @@ public class DialoguePanel : MonoBehaviour
             if (isDialogueFinished)
             {
                 CloseWindow();
+                //GameManager.instance.ResumeGame();
             }
             else
             {
@@ -145,12 +154,13 @@ public class DialoguePanel : MonoBehaviour
         foreach (char letter in nextSentence.ToCharArray())
         {
             dialogueText.text += letter;
+            AudioManager.instance.StopAudioClip(ClipType.Text);
         }
 
         if(startDialogue.Count==0)
         {
             isDialogueFinished = true;
-            GameManager.instance.ResumeGame();
+            //GameManager.instance.ResumeGame();
         }
     }
 }
