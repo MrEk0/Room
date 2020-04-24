@@ -47,6 +47,9 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //if (GameManager.instance.isGamePaused)
+        //    return;
+
         if (Input.GetMouseButtonDown(0))
         {
             if (EventSystem.current.IsPointerOverGameObject())
@@ -68,6 +71,9 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //if (GameManager.instance.isGamePaused)
+        //    return;
+
         Movement();
     }
 
@@ -80,6 +86,17 @@ public class Player : MonoBehaviour
     private void MoveToCursor()
     {
         target = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+
+        //Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(target, Vector2.zero);
+        //Debug.Log(hit.collider.name);
+        if(hit && hit.collider.GetComponent<Player>())
+        {
+            target = myTransform.position;
+            return;
+        }
+
+     
         movement.x = Mathf.Clamp(target.x - myTransform.position.x, minMovePos, maxMovePos);
         movement.y = Mathf.Clamp(target.y - myTransform.position.y, minMovePos, maxMovePos);
 

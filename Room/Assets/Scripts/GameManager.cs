@@ -7,9 +7,6 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    //[SerializeField] HUD hud;
-    //[SerializeField] SceneLoader sceneLoader;
-
     public SceneName CurrentScene { get; private set; } = SceneName.StartScene;
     public bool isGamePaused { get; private set; } = false;
 
@@ -51,6 +48,11 @@ public class GameManager : MonoBehaviour
     public void PauseGame()
     {
         isGamePaused = true;
+    }
+
+    public void ResumeGame()
+    {
+        isGamePaused = false;
     }
 
     public void UpdateCurrentScene(int sceneIndex)

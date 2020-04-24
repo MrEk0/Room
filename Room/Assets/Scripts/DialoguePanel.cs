@@ -1,14 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class DialoguePanel : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI playerName;
-    [SerializeField] TextMeshProUGUI playerText;
-    [SerializeField] TextMeshProUGUI friendText;
     [SerializeField] Dialogue dialogue;
+    [SerializeField] TextMeshProUGUI leftNameText;
+    [SerializeField] TextMeshProUGUI leftPersonText;
+    [SerializeField] TextMeshProUGUI rightNameText;
+    [SerializeField] TextMeshProUGUI rightPersonText;
+    [SerializeField] Image leftPersonImage;
+    [SerializeField] Image rightPersonImage;
     [SerializeField] float textVelocity = 0.5f;
 
     private Queue<string> startDialogue;
@@ -20,23 +24,48 @@ public class DialoguePanel : MonoBehaviour
 
     private void Awake()
     {
-        //PlayerName();
-        animator = GetComponent<Animator>();     
+        animator = GetComponent<Animator>();
+
+        SetUpDialogue();
+    }
+
+    private void SetUpDialogue()
+    {
+        leftPersonImage.sprite = dialogue.GetLeftSprite();
+        rightPersonImage.sprite = dialogue.GetRightSprite();
+
+        DialogueInitiator initiator = dialogue.GetInitiator();
+        dialogueText = initiator == DialogueInitiator.Right ? leftPersonText : rightPersonText;//especially wrong behaviour to change it further
+
+        HeroTypeName leftPerson = dialogue.GetLeftName();
+        InitializePersonName(leftPerson, leftNameText);
+        HeroTypeName rightPerson = dialogue.GetRightName();
+        InitializePersonName(rightPerson, rightNameText);
+    }
+
+    private void InitializePersonName(HeroTypeName heroName, TextMeshProUGUI nameText)
+    {
+        switch(heroName)
+        {
+            case HeroTypeName.Player:
+                nameText.text = GameManager.instance.GetPlayerName();
+                break;
+            case HeroTypeName.PlayerFriend:
+                nameText.text = "Friend";//get name from settings
+                break;
+            case HeroTypeName.Father:
+                nameText.text = "Father";//get name from settings
+                break;
+            case HeroTypeName.Mother:
+                nameText.text = "Mother";//get name from settings
+                break;
+        }
     }
 
     private void Start()
     {
-        playerName.text = GameManager.instance.GetPlayerName();
+        GameManager.instance.PauseGame();
     }
-
-    //private void PlayerName()
-    //{
-    //    Data playerdata = DataSaver.Load();
-    //    if (playerdata != null)
-    //    {
-    //        playerName.text = playerdata.name;
-    //    }
-    //}
 
     public void StartDialogue()
     {
@@ -51,7 +80,7 @@ public class DialoguePanel : MonoBehaviour
         for (int i = 0; i < sentenceCount; i++)
         {
             nextSentence = startDialogue.Dequeue();
-            dialogueText = i % 2 == 0 ? playerText : friendText;
+            dialogueText = dialogueText == leftPersonText ? rightPersonText : leftPersonText;
             sentenceCoroutine = TypeSentence(nextSentence, dialogueText);
             StartCoroutine(sentenceCoroutine);
 
@@ -121,6 +150,7 @@ public class DialoguePanel : MonoBehaviour
         if(startDialogue.Count==0)
         {
             isDialogueFinished = true;
+            GameManager.instance.ResumeGame();
         }
     }
 }

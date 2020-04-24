@@ -63,6 +63,18 @@ public class HUD : MonoBehaviour
         GameManager.instance.SaveDayData(dayCounter, dayTime);
     }
 
+    public void UpdateDayTime(float time)
+    {
+        dayTime += time;
+        if(dayTime>24)
+        {
+            dayTime -= 24;
+            dayCounter++;
+        }
+
+        UpdateText();
+    }
+
     public void UpdateSliderValue(float value)
     {
         sliderValue = Mathf.Max(0, sliderValue += value);
