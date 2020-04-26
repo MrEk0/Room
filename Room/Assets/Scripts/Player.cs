@@ -8,6 +8,8 @@ public class Player : MonoBehaviour
 {
     public LayerMask roomMask;
     public CompositeCollider2D roomColider;
+    public PolygonCollider2D polRoom;
+    public BoxCollider2D randomCol;
     [SerializeField] float speed=1f;
     [SerializeField] Transform phoneTransform;
 
@@ -17,6 +19,9 @@ public class Player : MonoBehaviour
     private Transform myTransform;
     private Vector3 target;
     private Vector2 movement;
+
+    Vector2 mousePos;
+    RaycastHit2D distHit;
 
     private float minMovePos=-1f;
     private float maxMovePos = 1f;
@@ -78,7 +83,7 @@ public class Player : MonoBehaviour
         {
             pathToGo.Clear();
             index = 1;
-            Debug.Log(index);
+            //Debug.Log(index);
         }
 
         //Debug.Log(index);
@@ -108,34 +113,42 @@ public class Player : MonoBehaviour
 
     private void MoveToCursor()
     {
-        target = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
-        RaycastHit2D hit = Physics2D.Raycast(target, Vector2.zero);
+        RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
         if (hit && hit.collider.GetComponent<Player>())
         {
             target = myTransform.position;
             return;
         }
 
-        float distance = Vector2.Distance( myTransform.position, target);
-        RaycastHit2D distHit = Physics2D.Raycast(myTransform.position, target,distance, roomMask);
-        //Debug.Log(distance);
-        //Debug.Log(distHit.distance);
+        float distance = Vector2.Distance( myTransform.position, mousePos);
+        distHit = Physics2D.Raycast(myTransform.position, mousePos, distance, roomMask);
 
-        if (distHit)
+        if (distHit && !hit.collider)
         {
             //get the closest point
             // find itinerary to the point
             float minDistance = Mathf.Infinity;
             float minDistance2 = Mathf.Infinity;
             Vector2 startPoint = new Vector2();
-            Vector2 finalPathPoint=new Vector2();
-            Vector2 finalPoint = roomColider.ClosestPoint(target);
+            Vector2 finalPathPoint = new Vector2();
+            Vector2 finalPoint;
+            //if target insede
+            if (!hit.collider)
+            {
+                finalPoint = roomColider.ClosestPoint(mousePos);
+            }
+            //otherwise finalpoint=target
+            else
+            {
+                finalPoint = mousePos;
+            }
 
-            Vector2[] pathPoints= distHit.collider.GetComponent<PolygonCollider2D>().GetPath(1);
+            Vector2[] pathPoints = distHit.collider.GetComponent<PolygonCollider2D>().GetPath(1);
             foreach (Vector2 vector in pathPoints)
             {
-                if(Vector2.Distance(vector, myTransform.position)<minDistance)
+                if (Vector2.Distance(vector, myTransform.position) < minDistance)
                 {
                     startPoint = vector;
                     minDistance = Vector2.Distance(vector, myTransform.position);
@@ -158,7 +171,7 @@ public class Player : MonoBehaviour
                     pathToGo.Add(pathPoints[i]);
                 }
             }
-            else if(startPointIndex>finalPointIndex)
+            else if (startPointIndex > finalPointIndex)
             {
                 for (int i = startPointIndex; i >= finalPointIndex; i--)
                 {
@@ -168,21 +181,115 @@ public class Player : MonoBehaviour
             pathToGo.Add(finalPoint);
             target = startPoint;
         }
-        else
+        else if (hit.collider)
         {
-            //check if the target inside the room
-            //if true go to target point
-            // otherwise find itinerary
-            Debug.Log("No");
+            //check player movement
+            CheckPlayerPath();
+
+            //roomColider.geometryType = CompositeCollider2D.GeometryType.Outlines;
+            //roomColider.ClosestPoint(mousePos);
+            //target = mousePos;
         }
+
+
 
         //movement.x = Mathf.Clamp(target.x - myTransform.position.x, minMovePos, maxMovePos);
         //movement.y = Mathf.Clamp(target.y - myTransform.position.y, minMovePos, maxMovePos);
 
     }
 
+    private void CheckPlayerPath()
+    {
+        int pathCount = polRoom.pathCount;
+        List<Vector2[]> paths = new List<Vector2[]>();
+
+        for(int i=0; i<pathCount; i++)
+        {
+            paths.Add(polRoom.GetPath(i));
+            //paths[i] = distHit.collider.GetComponent<PolygonCollider2D>().GetPath(i);
+        }
+
+        Vector2 playerPos = myTransform.position;
+        PathDirections pathDirections=PathDirections.LeftAngled;
+
+        if(playerPos.x>mousePos.x && playerPos.y>mousePos.y ||
+            playerPos.x<mousePos.x && playerPos.y<mousePos.y)//if x mouse==player x
+        {
+            pathDirections = PathDirections.RighAngled;
+        }
+        else if(playerPos.x < mousePos.x && playerPos.y > mousePos.y ||
+            playerPos.x > mousePos.x && playerPos.y < mousePos.y)//imporve?
+        {
+            pathDirections = PathDirections.LeftAngled;
+        }
+
+
+        List<Vector2> missedPoints = new List<Vector2>();
+        for (int i = 0; i < paths.Count; i++)
+        {
+            foreach (Vector2 point in paths[i])
+            {
+                if (pathDirections == PathDirections.LeftAngled)
+                {
+                    if (point.x > playerPos.x && point.x < mousePos.x
+                        && point.y < playerPos.y && point.y > mousePos.y ||
+                        point.x < playerPos.x && point.x > mousePos.x
+                        && point.y > playerPos.y && point.y < mousePos.y)
+                    {
+                        missedPoints.Add(point);
+                    }
+                }
+
+                if (pathDirections == PathDirections.RighAngled)
+                {
+                    if (point.x > playerPos.x && point.x < mousePos.x
+                       && point.y > playerPos.y && point.y < mousePos.y ||
+                       point.x < playerPos.x && point.x > mousePos.x
+                       && point.y < playerPos.y && point.y > mousePos.y)
+                    {
+                        missedPoints.Add(point);
+                    }
+                }
+            }
+        }
+
+        if (missedPoints.Count == 0)
+        {
+            target = mousePos;
+        }
+        else
+        {
+            float maxDistance = Mathf.Infinity;
+            pathToGo.Clear();
+            Vector2 startPoint = new Vector2();
+
+            while(missedPoints.Count!=0)
+            {
+                foreach (Vector2 point in missedPoints)
+                {
+                    if (Vector2.Distance(playerPos, point) < maxDistance)//change player for startpoint
+                    {
+                        startPoint = point;
+                        maxDistance = Vector2.Distance(playerPos, point);
+                    }
+                }
+                maxDistance = Mathf.Infinity;
+                pathToGo.Add(startPoint);
+                missedPoints.Remove(startPoint);
+            }
+
+            pathToGo.Add(mousePos);
+        }
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.DrawLine(transform.position, target);
     }
+}
+
+public enum PathDirections
+{
+    RighAngled,
+    LeftAngled
 }
