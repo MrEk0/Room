@@ -364,7 +364,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   roomColider: {fileID: 837783126}
-  polRoom: {fileID: 0}
+  polygonRoomCollider: {fileID: 0}
   randomCol: {fileID: 0}
   speed: 2
   phoneTransform: {fileID: 0}
@@ -1397,7 +1397,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   roomColider: {fileID: 837783126}
-  polRoom: {fileID: 837783123}
+  polygonRoomCollider: {fileID: 837783123}
   randomCol: {fileID: 0}
   speed: 2
   phoneTransform: {fileID: 0}
@@ -1409,7 +1409,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1021352099}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.65, y: -3.86, z: 0}
+  m_LocalPosition: {x: -3.57, y: -1.13, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 68596363}
