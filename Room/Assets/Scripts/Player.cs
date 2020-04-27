@@ -6,10 +6,9 @@ using System;
 
 public class Player : MonoBehaviour
 {
-    public LayerMask roomMask;
-    public CompositeCollider2D roomColider;
-    public PolygonCollider2D polygonRoomCollider;
-    public BoxCollider2D randomCol;
+    //[SerializeField] LayerMask roomMask;
+    //public CompositeCollider2D roomColider;
+    [SerializeField] PolygonCollider2D polygonRoomCollider;
     [SerializeField] float speed=1f;
     [SerializeField] Transform phoneTransform;
 
@@ -21,7 +20,6 @@ public class Player : MonoBehaviour
     private Vector2 movement;
 
     Vector2 mousePos;
-    RaycastHit2D distHit;
 
     private float minMovePos=-1f;
     private float maxMovePos = 1f;
@@ -33,7 +31,9 @@ public class Player : MonoBehaviour
     //
     List<Vector2> pathToGo=new List<Vector2>();
     List<Vector2[]> colliderPaths;
-    int index = 1;
+    CompositeCollider2D compositeRoomCollider;
+    RaycastHit2D mousePosHit;
+    int index = 0;
         //
 
     private void Awake()
@@ -42,15 +42,25 @@ public class Player : MonoBehaviour
         mainCamera = Camera.main;
         rb = GetComponent<Rigidbody2D>();
         myTransform = GetComponent<Transform>();
+        compositeRoomCollider = polygonRoomCollider.gameObject.GetComponent<CompositeCollider2D>();
 
         ReceiveColliderPaths();
     }
 
-    // Start is called before the first frame update
     void Start()
     {
         target = myTransform.position;
-        //StartCutScene();
+    }
+
+    private void ReceiveColliderPaths()
+    {
+        int pathCount = polygonRoomCollider.pathCount;
+        colliderPaths = new List<Vector2[]>();
+
+        for (int i = 0; i < pathCount; i++)
+        {
+            colliderPaths.Add(polygonRoomCollider.GetPath(i));
+        }
     }
 
     public void StartCutScene()
@@ -60,7 +70,6 @@ public class Player : MonoBehaviour
         movement.y = Mathf.Clamp(target.y - myTransform.position.y, minMovePos, maxMovePos);
     }
 
-    // Update is called once per frame
     void Update()
     {
         //if (GameManager.instance.isGamePaused)
@@ -78,7 +87,7 @@ public class Player : MonoBehaviour
         AnimationBehaviour(distance);
         PathMovement(distance);
 
-        Debug.DrawLine(myTransform.position, target);
+        Debug.DrawLine(myTransform.position, target);//delete
     }
 
     private void PathMovement(float distance)
@@ -91,7 +100,7 @@ public class Player : MonoBehaviour
         else if (index >= pathToGo.Count)
         {
             pathToGo.Clear();
-            index = 1;
+            index = 0;
         }
     }
 
@@ -118,201 +127,239 @@ public class Player : MonoBehaviour
 
     private void MoveToCursor()
     {
+        Vector2 playerPos = myTransform.position;
+
         mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
-        RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
-        if (hit && hit.collider.GetComponent<Player>())
+        mousePosHit = Physics2D.Raycast(mousePos, Vector2.zero);
+        if (mousePosHit && mousePosHit.collider.GetComponent<Player>())
         {
             target = myTransform.position;
             return;
         }
 
-        float distance = Vector2.Distance( myTransform.position, mousePos);
-        distHit = Physics2D.Raycast(myTransform.position, mousePos, distance, roomMask);
-
-        if (distHit && !hit.collider)
-        {
-            //get the closest point
-            // find itinerary to the point
-            float minDistance = Mathf.Infinity;
-            float minDistance2 = Mathf.Infinity;
-            Vector2 startPoint = new Vector2();
-            Vector2 finalPathPoint = new Vector2();
-            Vector2 finalPoint;
-            //if target insede
-            if (!hit.collider)
-            {
-                finalPoint = roomColider.ClosestPoint(mousePos);
-            }
-            //otherwise finalpoint=target
-            else
-            {
-                finalPoint = mousePos;
-            }
-
-            Vector2[] pathPoints = distHit.collider.GetComponent<PolygonCollider2D>().GetPath(1);
-            foreach (Vector2 vector in pathPoints)
-            {
-                if (Vector2.Distance(vector, myTransform.position) < minDistance)
-                {
-                    startPoint = vector;
-                    minDistance = Vector2.Distance(vector, myTransform.position);
-                }
-                if (Vector2.Distance(vector, finalPoint) < minDistance2)
-                {
-                    finalPathPoint = vector;
-                    minDistance2 = Vector2.Distance(vector, finalPoint);
-                }
-            }
-
-            int startPointIndex = Array.IndexOf(pathPoints, startPoint);
-            int finalPointIndex = Array.IndexOf(pathPoints, finalPathPoint);
-
-            pathToGo.Clear();
-            if (startPointIndex < finalPointIndex)
-            {
-                for (int i = startPointIndex; i <= finalPointIndex; i++)
-                {
-                    pathToGo.Add(pathPoints[i]);
-                }
-            }
-            else if (startPointIndex > finalPointIndex)
-            {
-                for (int i = startPointIndex; i >= finalPointIndex; i--)
-                {
-                    pathToGo.Add(pathPoints[i]);
-                }
-            }
-            pathToGo.Add(finalPoint);
-            target = startPoint;
-        }
-        else if (hit.collider)
-        {
-            //check player movement
-            CreatePlayerPath();
-        }
-
-
+        CreatePlayerPath(playerPos);
 
         movement.x = Mathf.Clamp(target.x - myTransform.position.x, minMovePos, maxMovePos);
         movement.y = Mathf.Clamp(target.y - myTransform.position.y, minMovePos, maxMovePos);
-
     }
 
-    private void CreatePlayerPath()
+    private void CreatePlayerPath(Vector2 playerPos)
     {
-        Vector2 playerPos = myTransform.position;
-        PathDirections pathDirections = PathDirections.LeftAngled;
+        mousePos = GetRightMousePosition();
+        PathDirections pathDirection = DefineDirections(playerPos);
+        List<Vector2> crossedPoints = FormListOfCrossedPoints(playerPos, pathDirection);
 
-        pathDirections = DefineDirections(playerPos, pathDirections);
-
-        List<Vector2> missedPoints = FormListOfCrossedPoints(playerPos, pathDirections);
-
-        if (missedPoints.Count == 0)
+        if (crossedPoints.Count == 0)
         {
             target = mousePos;
         }
         else
         {
-            FormFinalPath(playerPos, missedPoints);
+            FormFinalPath(playerPos, crossedPoints);
         }
     }
 
-    private PathDirections DefineDirections(Vector2 playerPos, PathDirections pathDirections)
+    private Vector2 GetRightMousePosition()
     {
-        if (playerPos.x > mousePos.x && playerPos.y > mousePos.y ||
-            playerPos.x < mousePos.x && playerPos.y < mousePos.y)//if x mouse==player x
+        if (mousePosHit &&
+            mousePosHit.collider.GetComponent<PolygonCollider2D>() != null)
         {
-            pathDirections = PathDirections.RighAngled;
+            return mousePos;
         }
-        else if (playerPos.x < mousePos.x && playerPos.y > mousePos.y ||
-            playerPos.x > mousePos.x && playerPos.y < mousePos.y)//imporve?
+        else
         {
-            pathDirections = PathDirections.LeftAngled;
+            return compositeRoomCollider.ClosestPoint(mousePos);
+        }
+    }
+
+    private PathDirections DefineDirections(Vector2 playerPos)
+    {
+        PathDirections pathDirection=PathDirections.LeftAngled;
+
+        if (playerPos.x >= mousePos.x && playerPos.y > mousePos.y ||
+            playerPos.x <= mousePos.x && playerPos.y < mousePos.y)//if x mouse==player x
+        {
+            pathDirection = PathDirections.RightAngled;
+        }
+        else if (playerPos.x < mousePos.x && playerPos.y >= mousePos.y ||
+            playerPos.x > mousePos.x && playerPos.y <= mousePos.y)//imporve?
+        {
+            pathDirection = PathDirections.LeftAngled;
         }
 
-        return pathDirections;
+        return pathDirection;
+    }
+
+    private List<Vector2> FormListOfCrossedPoints(Vector2 playerPos, PathDirections pathDirections)
+    {
+        List<Vector2> crossedPoints = new List<Vector2>();
+        List<int> crossedPointIndexes = new List<int>();
+        for (int i = 0; i < colliderPaths.Count; i++)
+        {
+            Vector2[] path = colliderPaths[i];
+
+            for (int j = 0; j < path.Length; j++)
+            {
+                int k = j == path.Length - 1 ? 0 : j + 1;
+                bool isCrossed = isLinesIntersected(playerPos, mousePos, path[j], path[k]);
+                //bool isMousePosBelongToLine = isMouseOnTheLine(path[j], path[k]);
+                if (pathDirections == PathDirections.RightAngled && isCrossed /*&& !isMousePosBelongToLine*/)
+                {
+                    CheckRightAngledCrossing(playerPos, crossedPointIndexes, path, j, k);                 
+                }
+                if (pathDirections == PathDirections.LeftAngled && isCrossed /*&& !isMousePosBelongToLine*/)
+                {
+                    CheckLeftAngledCrossing(playerPos, crossedPointIndexes, path, j, k);
+                }
+            }
+            crossedPoints = GetReformedPointsList(crossedPoints, crossedPointIndexes, path);
+        }
+
+        return crossedPoints;
+    }
+
+    private void CheckRightAngledCrossing(Vector2 playerPos, List<int> crossedPointIndexes, Vector2[] path, int j, int k)
+    {
+        if (path[j].x < playerPos.x && path[k].x < playerPos.x ||
+            path[j].x < mousePos.x && path[k].x < mousePos.x)
+        {
+            float distancePoint1 = Vector2.Distance(path[j], mousePos);
+            float distancePoint2 = Vector2.Distance(path[k], mousePos);
+
+            int indexToAdd = distancePoint1 > distancePoint2 ? k : j;
+            crossedPointIndexes.Add(indexToAdd);
+        }
+        else if (path[j].x < playerPos.x || path[j].x < mousePos.x)
+        {
+            crossedPointIndexes.Add(j);
+        }
+        else if (path[k].x < playerPos.x || path[k].x < mousePos.x)
+        {
+            crossedPointIndexes.Add(k);
+        }
+    }
+
+    private void CheckLeftAngledCrossing(Vector2 playerPos, List<int> crossedPointIndexes, Vector2[] path, int j, int k)
+    {
+            if (path[j].x > playerPos.x && path[k].x > playerPos.x ||
+                path[j].x > mousePos.x && path[k].x > mousePos.x)
+            {
+                float distancePoint1 = Vector2.Distance(path[j], mousePos);
+                float distancePoint2 = Vector2.Distance(path[k], mousePos);
+
+                int indexToAdd = distancePoint1 > distancePoint2 ? k : j;
+                crossedPointIndexes.Add(indexToAdd);
+            }
+            else
+            if (path[j].x > playerPos.x || path[j].x > mousePos.x)
+            {
+                crossedPointIndexes.Add(j);
+            }
+            else if (path[k].x > playerPos.x || path[k].x > mousePos.x)
+            {
+                crossedPointIndexes.Add(k);
+            }
+    }
+
+    private List<Vector2> GetReformedPointsList(List<Vector2> crossedPoints, List<int> crossedPointIndexes, Vector2[] path)
+    {
+        if (crossedPoints.Count == 0)
+        {
+            crossedPoints = GetPathPoints(crossedPointIndexes, path);
+        }
+        else
+        {
+            List<Vector2> tempPointList = GetPathPoints(crossedPointIndexes, path);
+            crossedPoints.AddRange(tempPointList);
+        }
+
+        crossedPointIndexes.Clear();
+        return crossedPoints;
+    }
+
+    private List<Vector2> GetPathPoints(List<int> pointIndexes, Vector2[] currentPath)
+    {
+        List<Vector2> crossedPoints = new List<Vector2>();
+        if (pointIndexes.Count == 0)
+            return crossedPoints;
+
+        int firstIndex = pointIndexes[0];
+        int lastIndex = pointIndexes[pointIndexes.Count-1];
+
+        if (firstIndex > lastIndex)
+        {
+            crossedPoints = GetIndexPathThroughZero(currentPath, firstIndex, lastIndex);
+        }
+        else
+        {
+            for (int i = firstIndex; i <= lastIndex; i++)
+            {
+                crossedPoints.Add(currentPath[i]);
+            }
+        }
+
+        return crossedPoints;
+    }
+
+    private List<Vector2> GetIndexPathThroughZero(Vector2[] currentPath, int firstIndex, int lastIndex)
+    {
+        int lastPathIndex = currentPath.Length;
+        List<int> indexPath = new List<int>();
+        List<Vector2> crossedPoints = new List<Vector2>();
+
+        for (int i = firstIndex; i < lastPathIndex; i++)
+        {
+            indexPath.Add(i);
+        }
+
+        for (int i = 0; i < lastIndex; i++)
+        {
+            indexPath.Add(i);
+        }
+
+        foreach (var index in indexPath)
+        {
+            crossedPoints.Add(currentPath[index]);
+        }
+
+        return crossedPoints;
     }
 
     private void FormFinalPath(Vector2 playerPos, List<Vector2> missedPoints)
     {
         float maxDistance = Mathf.Infinity;
         pathToGo.Clear();
-        Vector2 startPoint = new Vector2();
+        Vector2 pathPoint = new Vector2();
+        Vector2 previousPathPoint = playerPos;
 
         while (missedPoints.Count != 0)
         {
             foreach (Vector2 point in missedPoints)
             {
-                if (Vector2.Distance(playerPos, point) < maxDistance)//change player for startpoint
+                if (Vector2.Distance(playerPos, point) < maxDistance)
                 {
-                    startPoint = point;
+                    pathPoint = point;
                     maxDistance = Vector2.Distance(playerPos, point);
                 }
             }
             maxDistance = Mathf.Infinity;
-            pathToGo.Add(startPoint);
-            missedPoints.Remove(startPoint);
+            CheckDistanceToTarget(pathPoint, previousPathPoint);
+            previousPathPoint = pathPoint;
+            missedPoints.Remove(pathPoint);
         }
 
         pathToGo.Add(mousePos);
     }
 
-    private List<Vector2> FormListOfCrossedPoints(Vector2 playerPos, PathDirections pathDirections)
+    private void CheckDistanceToTarget(Vector2 pathPoint, Vector2 previousPathPoint)
     {
-        List<Vector2> missedPoints = new List<Vector2>();
-        for (int i = 0; i < colliderPaths.Count; i++)
+        float distanceToTarget = Vector2.Distance(pathPoint, mousePos);
+        float distanceFromPrevPoint = Vector2.Distance(previousPathPoint, mousePos);
+
+        if(distanceToTarget<distanceFromPrevPoint)
         {
-            Vector2[] path = colliderPaths[i];
-            for (int j = 0; j < path.Length-1; j++)//to avoid get out of array extension
-            {
-                if(pathDirections==PathDirections.LeftAngled)
-                {
-                    bool isCrossed = isLinesIntersected(playerPos, mousePos, path[j], path[j+1]);
-                    if (isCrossed)
-                    {
-                        if (path[j].x > playerPos.x || path[j].x > mousePos.x)
-                        {
-                            missedPoints.Add(path[j]);
-                        }
-                        else if (path[j+1].x > playerPos.x || path[j+1].x > mousePos.x)
-                        {
-                            missedPoints.Add(path[j+1]);
-                        }
-                    }
-
-                }
-
-                if (pathDirections == PathDirections.RighAngled)
-                {
-                    bool isCrossed = isLinesIntersected(playerPos, mousePos, path[j], path[j + 1]);
-                    if (isCrossed)
-                    {
-                        if (path[j].x < playerPos.x || path[j].x < mousePos.x)
-                        {
-                            missedPoints.Add(path[j]);
-                        }
-                        else if (path[j + 1].x < playerPos.x || path[j + 1].x < mousePos.x)
-                        {
-                            missedPoints.Add(path[j + 1]);
-                        }
-                    }
-
-                }
-            }
-        }
-
-        return missedPoints;
-    }
-
-    private void ReceiveColliderPaths()
-    {
-        int pathCount = polygonRoomCollider.pathCount;
-        colliderPaths = new List<Vector2[]>();
-
-        for (int i = 0; i < pathCount; i++)
-        {
-            colliderPaths.Add(polygonRoomCollider.GetPath(i));
+            pathToGo.Add(pathPoint);
         }
     }
 
@@ -335,7 +382,6 @@ public class Player : MonoBehaviour
         }
         else
         {
-
             if (alphaDenominator > 0)
             {
                 if (alphaNumerator < 0 || alphaNumerator > alphaDenominator)
@@ -363,7 +409,29 @@ public class Player : MonoBehaviour
         return doIntersect;
     }
 
-    private void OnDrawGizmos()
+    private bool isMouseOnTheLine(Vector2 point1, Vector2 point2)
+    {
+        bool isOnTheLine = false;
+
+        //Entire line segment
+        Vector2 point21 = point2 - point1;
+        //The intersection and the first point
+        Vector2 point1Mouse = mousePos - point1;
+
+        //Need to check 2 things: 
+        //1. If the vectors are pointing in the same direction = if the dot product is positive
+        //2. If the length of the vector between the intersection and the first point is smaller than the entire line
+        if (Vector2.Dot(point21, point1Mouse) > 0f && point21.sqrMagnitude >= point1Mouse.sqrMagnitude)
+        {
+            isOnTheLine = true;
+        }
+
+        return isOnTheLine;
+    }
+
+  
+
+    private void OnDrawGizmos()//delete
     {
         Gizmos.DrawLine(transform.position, target);
     }
@@ -371,6 +439,6 @@ public class Player : MonoBehaviour
 
 public enum PathDirections
 {
-    RighAngled,
+    RightAngled,
     LeftAngled
 }
