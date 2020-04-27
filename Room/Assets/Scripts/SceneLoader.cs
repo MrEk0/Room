@@ -66,17 +66,11 @@ public class SceneLoader : MonoBehaviour
 
         int sceneIndex = sceneName == SceneName.DarkRoom ? (int)SceneName.LightRoom : (int)SceneName.DarkRoom;
         StartCoroutine(FadeOut(sceneIndex));
-        //StartCoroutine(WaitToUpdate());
     }
-
-    //private IEnumerator WaitToUpdate()
-    //{
-    //    yield return new WaitForSeconds(fadeTime);
-    //    HUD.Instance.UpdateDay();
-    //}
 
     private IEnumerator FadeOut(int sceneIndex)
     {
+        GameManager.instance.PauseGame();
         float t = 0f;
 
         while (alpha != 1)
@@ -107,5 +101,6 @@ public class SceneLoader : MonoBehaviour
         {
             HUD.Instance.ShowGreetingPanel();
         }
+        GameManager.instance.ResumeGame();
     }
 }

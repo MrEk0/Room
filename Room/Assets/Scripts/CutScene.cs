@@ -16,14 +16,20 @@ public class CutScene : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    private IEnumerator Start()
+    private void Start()
     {
-        //GameManager.instance.PauseGame();
+        if (GameManager.instance.isCutScenePlayed)
+            return;
+
+        StartCoroutine(StartCutScene());
+    }
+
+    private IEnumerator StartCutScene()
+    {
         blockClickPanel.SetActive(true);
         yield return new WaitForSeconds(timeToStart);
         animator.SetTrigger("Start");
         phone.SetActive(true);
-        //AudioManager.instance.PlayPhoneAudio();
     }
 
     public void PlayFinishAnimation()
@@ -33,7 +39,7 @@ public class CutScene : MonoBehaviour
 
     public void StopAnimation()
     {
-        //GameManager.instance.ResumeGame();
+        GameManager.instance.isCutScenePlayed = true;
         blockClickPanel.SetActive(true);
         gameObject.SetActive(false);
     }

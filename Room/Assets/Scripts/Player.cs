@@ -6,8 +6,6 @@ using System;
 
 public class Player : MonoBehaviour
 {
-    //[SerializeField] LayerMask roomMask;
-    //public CompositeCollider2D roomColider;
     [SerializeField] PolygonCollider2D polygonRoomCollider;
     [SerializeField] float speed=1f;
     [SerializeField] Transform phoneTransform;
@@ -16,25 +14,24 @@ public class Player : MonoBehaviour
     private Camera mainCamera;
     private Rigidbody2D rb;
     private Transform myTransform;
+
     private Vector3 target;
     private Vector2 movement;
-
-    Vector2 mousePos;
+    private Vector2 mousePos;
+    private List<Vector2> pathToGo = new List<Vector2>();
+    private List<Vector2[]> colliderPaths;
+    private CompositeCollider2D compositeRoomCollider;
+    private RaycastHit2D mousePosHit;
 
     private float minMovePos=-1f;
     private float maxMovePos = 1f;
+    private int pointIndex = 0;
+    private bool isPathCreated = false;
 
     private const string SPEEDX = "SpeedX";
     private const string SPEEDY = "SpeedY";
     private const string DISTANCE = "Distance";
-
-    //
-    List<Vector2> pathToGo=new List<Vector2>();
-    List<Vector2[]> colliderPaths;
-    CompositeCollider2D compositeRoomCollider;
-    RaycastHit2D mousePosHit;
-    int index = 0;
-        //
+    private const string PATH = "isPathExecuted";
 
     private void Awake()
     {
@@ -66,8 +63,7 @@ public class Player : MonoBehaviour
     public void StartCutScene()
     {
         target = phoneTransform.position;
-        movement.x = Mathf.Clamp(target.x - myTransform.position.x, minMovePos, maxMovePos);
-        movement.y = Mathf.Clamp(target.y - myTransform.position.y, minMovePos, maxMovePos);
+        ClampMovement();
     }
 
     void Update()
@@ -86,22 +82,29 @@ public class Player : MonoBehaviour
         float distance = Vector2.SqrMagnitude(target - myTransform.position);
         AnimationBehaviour(distance);
         PathMovement(distance);
-
-        Debug.DrawLine(myTransform.position, target);//delete
     }
 
     private void PathMovement(float distance)
     {
-        if (distance == 0 && pathToGo.Count != 0 && index < pathToGo.Count)
+        if (distance==0 && pathToGo.Count != 0 && pointIndex < pathToGo.Count)
         {
-            target = pathToGo[index];
-            index++;
+            target = pathToGo[pointIndex];
+            pointIndex++;
+            ClampMovement();
         }
-        else if (index >= pathToGo.Count)
+        else if (pointIndex >= pathToGo.Count && isPathCreated==true)
         {
             pathToGo.Clear();
-            index = 0;
+            animator.SetBool(PATH, false);
+            pointIndex = 0;
+            isPathCreated = false;
         }
+    }
+
+    private void ClampMovement()
+    {
+        movement.x = Mathf.Clamp(target.x - myTransform.position.x, minMovePos, maxMovePos);
+        movement.y = Mathf.Clamp(target.y - myTransform.position.y, minMovePos, maxMovePos);
     }
 
     private void AnimationBehaviour(float distance)
@@ -113,8 +116,8 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //if (GameManager.instance.isGamePaused)
-        //    return;
+        ////if (GameManager.instance.isGamePaused)
+        ////    return;
 
         Movement();
     }
@@ -127,6 +130,7 @@ public class Player : MonoBehaviour
 
     private void MoveToCursor()
     {
+        animator.SetBool(PATH, false);
         Vector2 playerPos = myTransform.position;
 
         mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
@@ -139,14 +143,13 @@ public class Player : MonoBehaviour
         }
 
         CreatePlayerPath(playerPos);
-
-        movement.x = Mathf.Clamp(target.x - myTransform.position.x, minMovePos, maxMovePos);
-        movement.y = Mathf.Clamp(target.y - myTransform.position.y, minMovePos, maxMovePos);
+        ClampMovement();
     }
 
     private void CreatePlayerPath(Vector2 playerPos)
     {
         mousePos = GetRightMousePosition();
+
         PathDirections pathDirection = DefineDirections(playerPos);
         List<Vector2> crossedPoints = FormListOfCrossedPoints(playerPos, pathDirection);
 
@@ -157,6 +160,8 @@ public class Player : MonoBehaviour
         else
         {
             FormFinalPath(playerPos, crossedPoints);
+            animator.SetBool(PATH, true);
+            isPathCreated = true;
         }
     }
 
@@ -169,8 +174,32 @@ public class Player : MonoBehaviour
         }
         else
         {
-            return compositeRoomCollider.ClosestPoint(mousePos);
+            Vector2 overlappedMousePos = FindOverlappedPoint();
+
+            return overlappedMousePos;
         }
+    }
+
+    private Vector2 FindOverlappedPoint()
+    {
+        Vector2 overlappedMousePos = new Vector2();
+        Vector2 closestPoint = compositeRoomCollider.ClosestPoint(mousePos);
+        Vector2[] stepPoints = new Vector2[4]
+            {
+             new Vector2(closestPoint.x + 0.1f, closestPoint.y),
+             new Vector2(closestPoint.x, closestPoint.y + 0.1f),
+             new Vector2(closestPoint.x - 0.1f, closestPoint.y),
+             new Vector2(closestPoint.x, closestPoint.y - 0.1f),
+            };
+        foreach (var stepPoint in stepPoints)
+        {
+            if (compositeRoomCollider.OverlapPoint(stepPoint))
+            {
+                overlappedMousePos = stepPoint;
+            }
+        }
+
+        return overlappedMousePos;
     }
 
     private PathDirections DefineDirections(Vector2 playerPos)
@@ -204,6 +233,7 @@ public class Player : MonoBehaviour
                 int k = j == path.Length - 1 ? 0 : j + 1;
                 bool isCrossed = isLinesIntersected(playerPos, mousePos, path[j], path[k]);
                 //bool isMousePosBelongToLine = isMouseOnTheLine(path[j], path[k]);
+                //Debug.Log(isMouseOnTheLine());
                 if (pathDirections == PathDirections.RightAngled && isCrossed /*&& !isMousePosBelongToLine*/)
                 {
                     CheckRightAngledCrossing(playerPos, crossedPointIndexes, path, j, k);                 
@@ -293,9 +323,18 @@ public class Player : MonoBehaviour
         }
         else
         {
-            for (int i = firstIndex; i <= lastIndex; i++)
+            int pathPointsClockwise = (lastIndex + 1) - firstIndex;
+            int pathPointsAntiClockwise = (currentPath.Length - lastIndex) + firstIndex+1;
+            if (pathPointsClockwise <= pathPointsAntiClockwise)
             {
-                crossedPoints.Add(currentPath[i]);
+                for (int i = firstIndex; i <= lastIndex; i++)
+                {
+                    crossedPoints.Add(currentPath[i]);
+                }
+            }
+            else
+            {
+                crossedPoints = GetIndexPathThroughZero(currentPath, lastIndex, firstIndex);
             }
         }
 
@@ -313,7 +352,7 @@ public class Player : MonoBehaviour
             indexPath.Add(i);
         }
 
-        for (int i = 0; i < lastIndex; i++)
+        for (int i = 0; i <= lastIndex; i++)
         {
             indexPath.Add(i);
         }
@@ -328,25 +367,13 @@ public class Player : MonoBehaviour
 
     private void FormFinalPath(Vector2 playerPos, List<Vector2> missedPoints)
     {
-        float maxDistance = Mathf.Infinity;
         pathToGo.Clear();
-        Vector2 pathPoint = new Vector2();
         Vector2 previousPathPoint = playerPos;
 
-        while (missedPoints.Count != 0)
+        foreach (Vector2 point in missedPoints)
         {
-            foreach (Vector2 point in missedPoints)
-            {
-                if (Vector2.Distance(playerPos, point) < maxDistance)
-                {
-                    pathPoint = point;
-                    maxDistance = Vector2.Distance(playerPos, point);
-                }
-            }
-            maxDistance = Mathf.Infinity;
-            CheckDistanceToTarget(pathPoint, previousPathPoint);
-            previousPathPoint = pathPoint;
-            missedPoints.Remove(pathPoint);
+            CheckDistanceToTarget(point, previousPathPoint);
+            previousPathPoint = point;
         }
 
         pathToGo.Add(mousePos);
@@ -409,32 +436,30 @@ public class Player : MonoBehaviour
         return doIntersect;
     }
 
-    private bool isMouseOnTheLine(Vector2 point1, Vector2 point2)
-    {
-        bool isOnTheLine = false;
+    //private bool isMouseOnTheLine(/*Vector2 point1, Vector2 point2*/)
+    //{
+    //    Vector2 point1 = new Vector2(-4.5f,-1.2f);
+    //    Vector2 point2 = new Vector2(-1.4f,0.4f);
+    //    Vector2 mousePos = new Vector2(-1.6f,0.2f);
 
-        //Entire line segment
-        Vector2 point21 = point2 - point1;
-        //The intersection and the first point
-        Vector2 point1Mouse = mousePos - point1;
+    //    float deltaX = point2.x - point1.x;
+    //    float deltaY = point2.y - point1.y;
 
-        //Need to check 2 things: 
-        //1. If the vectors are pointing in the same direction = if the dot product is positive
-        //2. If the length of the vector between the intersection and the first point is smaller than the entire line
-        if (Vector2.Dot(point21, point1Mouse) > 0f && point21.sqrMagnitude >= point1Mouse.sqrMagnitude)
-        {
-            isOnTheLine = true;
-        }
+    //    float deltaMouseX = mousePos.x - point1.x;
+    //    float deltaMouseY = mousePos.y - point1.y;
 
-        return isOnTheLine;
-    }
+    //    float S = deltaX * deltaMouseY - deltaMouseX * deltaY;
 
-  
+    //    if (S == 0)
+    //        return true;
+    //    else
+    //        return false;
+    //}
 
-    private void OnDrawGizmos()//delete
-    {
-        Gizmos.DrawLine(transform.position, target);
-    }
+    //private void OnDrawGizmos()//delete
+    //{
+    //    Gizmos.DrawLine(transform.position, target);
+    //}
 }
 
 public enum PathDirections

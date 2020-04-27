@@ -140,6 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dca002695d590e47bbac5fc1956f2ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  polygonRoomCollider: {fileID: 0}
   speed: 2
   phoneTransform: {fileID: 0}
 --- !u!50 &4866014322541241629

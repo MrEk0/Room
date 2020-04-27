@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
 
     public SceneName CurrentScene { get; private set; } = SceneName.StartScene;
     public bool isGamePaused { get; private set; } = false;
+    public bool isCutScenePlayed { get; set; } = false;
 
     private string playerName = "";
 
