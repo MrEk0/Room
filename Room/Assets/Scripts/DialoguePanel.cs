@@ -65,11 +65,6 @@ public class DialoguePanel : MonoBehaviour
         }
     }
 
-    //private void Start()
-    //{
-    //    GameManager.instance.PauseGame();
-    //}
-
     public void StartDialogue()
     {
         StartCoroutine(TypeDialogue());
@@ -94,14 +89,12 @@ public class DialoguePanel : MonoBehaviour
         AudioManager.instance.StopAudioClip(ClipType.Text);
         isDialogueFinished = true;
         CloseWindow();
-        //GameManager.instance.ResumeGame();
     }
 
     private void CloseWindow()
     {
         animator.SetTrigger("DialogueFinished");
         blockClickPanel.SetActive(false);
-        //GameManager.instance.ResumeGame();
     }
 
     private float CalculateWaitTime(string sentence)
@@ -135,7 +128,6 @@ public class DialoguePanel : MonoBehaviour
             if (isDialogueFinished)
             {
                 CloseWindow();
-                //GameManager.instance.ResumeGame();
             }
             else
             {
@@ -160,7 +152,6 @@ public class DialoguePanel : MonoBehaviour
         if(startDialogue.Count==0)
         {
             isDialogueFinished = true;
-            //GameManager.instance.ResumeGame();
         }
     }
 }

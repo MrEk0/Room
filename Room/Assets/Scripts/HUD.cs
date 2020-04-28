@@ -24,20 +24,16 @@ public class HUD : MonoBehaviour
     {
         Instance = this;
 
-        //sliderValue = stressSlider.value;
-
         sliderValue = GameManager.instance.GetStressValue();
         dayCounter= GameManager.instance.GetDayNumber();
         dayTime = GameManager.instance.GetDayTime();
         stressSlider.value = sliderValue;
         LoadPlayerStat();
         UpdateText();
-        //UpdateDay();
     }
 
     private void UpdateText()
     {
-        //stressSlider.value = sliderValue;
         dayCounterText.text = "День: " + dayCounter;
         timeText.text = "Время: " + dayTime + ":00";
     }
@@ -55,7 +51,6 @@ public class HUD : MonoBehaviour
 
     public void UpdateDay()
     {
-        //sliderValue++;
         dayCounter++;
         dayTime = 14f;
 

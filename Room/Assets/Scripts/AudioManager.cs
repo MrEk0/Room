@@ -7,7 +7,6 @@ public enum ClipType
     Door,
     Phone,
     Text,
-    //Click
 }
 
 public class AudioManager : MonoBehaviour
@@ -55,7 +54,6 @@ public class AudioManager : MonoBehaviour
         objectSource.clip = doorClip;
         objectSource.loop = false;
         objectSource.Play();
-        //objectSource.PlayOneShot(doorClip);
     }
 
     public void PlayPhoneAudio()
@@ -75,9 +73,6 @@ public class AudioManager : MonoBehaviour
             case ClipType.Phone:
                 objectSource.Stop();
                 break;
-            //case ClipType.Click:
-            //    objectSource.Stop();
-            //    break;
             case ClipType.Text:
                 textSource.Stop();
                 break;

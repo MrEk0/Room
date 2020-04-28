@@ -10,7 +10,7 @@ public class PlayStation : MonoBehaviour
     [SerializeField] float hoursFor1Game = 1f;
     [SerializeField] float stressFor1Game = 2f;
     [SerializeField] float hoursFor2Games = 2f;
-    [SerializeField] float stressFor2Games = 4f;//improve?
+    [SerializeField] float stressFor2Games = 4f;
 
     public void PlayButton()
     {

@@ -27,9 +27,6 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         LoadPlayerName();
-
-        //GraphicsSettings.transparencySortMode = TransparencySortMode.CustomAxis;
-        //GraphicsSettings.transparencySortAxis = new Vector3(0.0f, 1.0f, 0.0f);
     }
 
     private void LoadPlayerName()
@@ -59,12 +56,6 @@ public class GameManager : MonoBehaviour
     public void UpdateCurrentScene(int sceneIndex)
     {
         CurrentScene = (SceneName)sceneIndex;
-
-        //if(CurrentScene==SceneName.LightRoom ||
-        //    CurrentScene == SceneName.DarkRoom)
-        //{
-        //    HUD.Instance.UpdateDay();
-        //}
     }
 
     public void SaveDayData(float dayCounter, float time)

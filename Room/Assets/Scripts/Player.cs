@@ -207,12 +207,12 @@ public class Player : MonoBehaviour
         PathDirections pathDirection=PathDirections.LeftAngled;
 
         if (playerPos.x >= mousePos.x && playerPos.y > mousePos.y ||
-            playerPos.x <= mousePos.x && playerPos.y < mousePos.y)//if x mouse==player x
+            playerPos.x <= mousePos.x && playerPos.y < mousePos.y)
         {
             pathDirection = PathDirections.RightAngled;
         }
         else if (playerPos.x < mousePos.x && playerPos.y >= mousePos.y ||
-            playerPos.x > mousePos.x && playerPos.y <= mousePos.y)//imporve?
+            playerPos.x > mousePos.x && playerPos.y <= mousePos.y)
         {
             pathDirection = PathDirections.LeftAngled;
         }
@@ -253,8 +253,8 @@ public class Player : MonoBehaviour
         if (path[j].x < playerPos.x && path[k].x < playerPos.x ||
             path[j].x < mousePos.x && path[k].x < mousePos.x)
         {
-            float distancePoint1 = Vector2.Distance(path[j], mousePos);
-            float distancePoint2 = Vector2.Distance(path[k], mousePos);
+            float distancePoint1 = Vector2.Distance(path[j], playerPos);
+            float distancePoint2 = Vector2.Distance(path[k], playerPos);
 
             int indexToAdd = distancePoint1 > distancePoint2 ? k : j;
             crossedPointIndexes.Add(indexToAdd);
@@ -274,8 +274,8 @@ public class Player : MonoBehaviour
             if (path[j].x > playerPos.x && path[k].x > playerPos.x ||
                 path[j].x > mousePos.x && path[k].x > mousePos.x)
             {
-                float distancePoint1 = Vector2.Distance(path[j], mousePos);
-                float distancePoint2 = Vector2.Distance(path[k], mousePos);
+                float distancePoint1 = Vector2.Distance(path[j], playerPos);
+                float distancePoint2 = Vector2.Distance(path[k], playerPos);
 
                 int indexToAdd = distancePoint1 > distancePoint2 ? k : j;
                 crossedPointIndexes.Add(indexToAdd);
@@ -318,23 +318,59 @@ public class Player : MonoBehaviour
 
         if (firstIndex > lastIndex)
         {
-            crossedPoints = GetIndexPathThroughZero(currentPath, firstIndex, lastIndex);
-        }
-        else
-        {
-            int pathPointsClockwise = (lastIndex + 1) - firstIndex;
-            int pathPointsAntiClockwise = (currentPath.Length - lastIndex) + firstIndex+1;
-            if (pathPointsClockwise <= pathPointsAntiClockwise)
-            {
-                for (int i = firstIndex; i <= lastIndex; i++)
-                {
-                    crossedPoints.Add(currentPath[i]);
-                }
-            }
-            else
+            if (IsClockwisePathSlower(currentPath, firstIndex, lastIndex))
             {
                 crossedPoints = GetIndexPathThroughZero(currentPath, lastIndex, firstIndex);
             }
+            else
+            {
+                crossedPoints = GetIndexPathThroughZero(currentPath, firstIndex, lastIndex);
+            }
+        }
+        else
+        {
+            crossedPoints = FormAppropriateCrossePointsPath(currentPath, crossedPoints, firstIndex, lastIndex);
+        }
+
+        return crossedPoints;
+    }
+
+    private bool IsClockwisePathSlower(Vector2[] currentPath, int firstIndex, int lastIndex)
+    {
+        int pathPointsClockwise = 0;
+
+        for (int i = firstIndex; i < currentPath.Length; i++)
+        {
+            pathPointsClockwise++;
+        }
+
+        for (int i = 0; i <= lastIndex; i++)
+        {
+            pathPointsClockwise++;
+        }
+
+        int pathPointsAntiClockwise = 0;
+        for (int i = firstIndex; i >= lastIndex; i--)
+        {
+            pathPointsAntiClockwise++;
+        }
+        return pathPointsClockwise > pathPointsAntiClockwise;
+    }
+
+    private List<Vector2> FormAppropriateCrossePointsPath(Vector2[] currentPath, List<Vector2> crossedPoints, int firstIndex, int lastIndex)
+    {
+        int pathPointsClockwise = (lastIndex + 1) - firstIndex;
+        int pathPointsAntiClockwise = (currentPath.Length - lastIndex) + firstIndex + 1;
+        if (pathPointsClockwise <= pathPointsAntiClockwise)
+        {
+            for (int i = firstIndex; i <= lastIndex; i++)
+            {
+                crossedPoints.Add(currentPath[i]);
+            }
+        }
+        else
+        {
+            crossedPoints = GetIndexPathThroughZero(currentPath, lastIndex, firstIndex);
         }
 
         return crossedPoints;
@@ -364,10 +400,36 @@ public class Player : MonoBehaviour
         return crossedPoints;
     }
 
-    private void FormFinalPath(Vector2 playerPos, List<Vector2> missedPoints)
+    private void FormFinalPath(Vector2 playerPos, List<Vector2> crossedPoints)
+    {
+        pathToGo.Clear();
+
+        Vector2 startPoint=FindStartPathPoint(playerPos, crossedPoints);
+        pathToGo.Add(startPoint);
+
+        int startIndex = crossedPoints.IndexOf(startPoint);
+        if (startIndex == 0)
+        {
+            for (int i = 1; i < crossedPoints.Count; i++)
+            {
+                pathToGo.Add(crossedPoints[i]);
+            }
+        }
+        else
+        {
+            for (int i = startIndex; i >= 0; i--)
+            {
+                pathToGo.Add(crossedPoints[i]);
+            }
+        }
+        CheckDistanceToTarget(pathToGo);
+
+        pathToGo.Add(mousePos);
+    }
+
+    private Vector2 FindStartPathPoint(Vector2 playerPos, List<Vector2> missedPoints)
     {
         float maxDistance = Mathf.Infinity;
-        pathToGo.Clear();
         Vector2 startPoint = new Vector2();
 
         foreach (Vector2 point in missedPoints)
@@ -378,26 +440,8 @@ public class Player : MonoBehaviour
                 maxDistance = Vector2.Distance(playerPos, point);
             }
         }
-        pathToGo.Add(startPoint);
 
-        int startIndex= missedPoints.IndexOf(startPoint);
-        if(startIndex==0)
-        {
-            for (int i = 1; i < missedPoints.Count; i++)
-            {
-                pathToGo.Add(missedPoints[i]);
-            }
-        }
-        else
-        {
-            for (int i = startIndex; i >= 0; i--)
-            {
-                pathToGo.Add(missedPoints[i]);
-            }
-        }
-        CheckDistanceToTarget(pathToGo);
-
-        pathToGo.Add(mousePos);
+        return startPoint;
     }
 
     private void CheckDistanceToTarget(List<Vector2> path)
@@ -405,16 +449,22 @@ public class Player : MonoBehaviour
         if (path.Count < 2)
             return;
 
-        Vector2 lastPoint=path[path.Count-1];
-        Vector2 preLastPoint=path[path.Count-2];
+        Vector2 lastPoint = path[path.Count - 1];
+        Vector2 preLastPoint = path[path.Count - 2];
         float distanceFromPrevPoint = Vector2.Distance(preLastPoint, mousePos);
-        float distanceFromLastPoint = Vector2.Distance(lastPoint, mousePos)+Vector2.Distance(preLastPoint, lastPoint);
+        float distanceFromLastPoint = Vector2.Distance(lastPoint, mousePos) + Vector2.Distance(preLastPoint, lastPoint);
 
         PathDirections pathDirection = DefineDirections(preLastPoint);
         List<Vector2> crossedPoints = FormListOfCrossedPoints(preLastPoint, pathDirection);
-        bool isCrossed = false;
-        if(crossedPoints.Contains(lastPoint) && crossedPoints.Contains(preLastPoint) && crossedPoints.Count==2
-            || crossedPoints.Count==0)
+
+        ChechIfPointLinesCrossed(lastPoint, preLastPoint, distanceFromPrevPoint, distanceFromLastPoint, crossedPoints);
+    }
+
+    private void ChechIfPointLinesCrossed(Vector2 lastPoint, Vector2 preLastPoint, float distanceFromPrevPoint, float distanceFromLastPoint, List<Vector2> crossedPoints)
+    {
+        bool isCrossed;
+        if (crossedPoints.Contains(lastPoint) && crossedPoints.Contains(preLastPoint) && crossedPoints.Count == 2
+      || crossedPoints.Count == 0)
         {
             isCrossed = false;
         }
@@ -423,7 +473,7 @@ public class Player : MonoBehaviour
             isCrossed = true;
         }
 
-        if (distanceFromLastPoint>distanceFromPrevPoint && !isCrossed)
+        if (distanceFromLastPoint > distanceFromPrevPoint && !isCrossed)
         {
             pathToGo.Remove(lastPoint);
         }
